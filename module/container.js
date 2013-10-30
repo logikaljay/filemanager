@@ -7,13 +7,13 @@ var containers = './containers/';
 
 module.exports=function(app) {
         app.post('/container/create', function(req, res) {
-				var name = req.body.name;
+				var container = req.body.container;
 				var key = req.body.key;
-				if ((name != undefined && name.length) && (key != undefined && key.length)) {
-    	            var result = createContainer(name, key);
+				if ((container != undefined && container.length) && (key != undefined && key.length)) {
+    	            var result = createContainer(container, key);
 					res.json(result);
 				} else {
-					error.message = "no name and/or key provided";
+					error.message = "no container and/or key provided";
 					res.json(error);
 				}
         });

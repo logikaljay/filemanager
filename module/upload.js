@@ -1,7 +1,9 @@
 var uuid = require('node-uuid'),
-        fs = require('fs'),
-        error = { upload: "error" },
-        success = { upload: "success" };
+	fs = require('fs'),
+	error = { upload: "error" },
+	success = { upload: "success" };
+
+var containers = './containers/';
 
 module.exports=function(app) {
 	app.get('/upload', function(req, res) {
@@ -9,11 +11,43 @@ module.exports=function(app) {
 	});
 
 	app.post('/upload', function(req, res) {
-		var file = res.body.file;
-		if (file != undefined && file.length) {
+		var key = req.body.key,
+			container = req.body.container,
+			file = req.files.file;
+
+		if (file == undefined) {
+			console.log(req.files);
+			error.message = "no file supplied";
+			res.json(error);
+		}
+
+		if (name == undefined || key == undefined) {
+			error.message = "incorrect key and or container";
+			res.json(error);
+		}
+
+		if (file != undefined && file.size) {
 			// file exists
+			fs.readFile(file.path, function(err, data) {
+				var newPath = containers + key + "/" + name;
+				fs.writeFile(newPath +"/"+ file.name, data, function(err) {
+					if (err) {
+						console.log(err);
+						error.message = "could not save the file";
+						res.json(error);
+					}
+
+					success.message = "file uploaded";
+					success.name = file.name;
+					success.size = file.size;
+					success.type = file.type;
+
+					res.json(success);
+				});
+			});
 		} else {
-			// file doesn't exist
+			error.message = "no file supplied";
+			res.json(error);
 		}
 	});
 }
