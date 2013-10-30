@@ -10,5 +10,6 @@
 * fs.extra - ~1.2.1
 
 ## Plans
-* container like storage that issues a GUID when creating to the creator
-* all api requests will require this GUID to access any of the files
+* container like storage that issues a api key on creation
+* api for common tasks like create/upload/delete/resize
+* container cache for resizing
