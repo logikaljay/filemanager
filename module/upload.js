@@ -21,7 +21,7 @@ module.exports=function(app) {
 			res.json(error);
 		}
 
-		if (name == undefined || key == undefined) {
+		if (container == undefined || key == undefined) {
 			error.message = "incorrect key and or container";
 			res.json(error);
 		}
@@ -29,7 +29,7 @@ module.exports=function(app) {
 		if (file != undefined && file.size) {
 			// file exists
 			fs.readFile(file.path, function(err, data) {
-				var newPath = containers + key + "/" + name;
+				var newPath = containers + key + "/" + container;
 				fs.writeFile(newPath +"/"+ file.name, data, function(err) {
 					if (err) {
 						console.log(err);
