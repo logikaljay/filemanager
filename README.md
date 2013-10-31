@@ -27,3 +27,4 @@
 * /upload - POST - { container: 'name', key: 'secret', file: @file.jpg }
 * /download/:container/:file - POST - { key: 'secret' }
 * /delete/:container/:file - DELETE - { key: 'secret' }
+* /rename - PUT - { container: 'name', key: 'secret', oldfile: file.jpg, newfile: newfile.jpg }
