@@ -7,6 +7,13 @@ var uuid = require('node-uuid'),
 var containers = './containers/';
 
 module.exports=function(app) {
+	/**
+	 * PUT - /rename - rename a file
+	 * param - key - the api key
+	 * param - container - the storage container name
+	 * param - oldname - the original file name
+	 * param - newname - the new filename (target)
+	 */
 	app.put('/rename', function(req, res) {
 		var key = req.body.key;
 		var container = req.body.container;
