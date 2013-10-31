@@ -9,79 +9,79 @@ var uuid = require('node-uuid'),
 var containers = './containers/';
 
 module.exports=function(app) {
-		/**
-		 * POST - /container/list/ - Get the containers
-		 * param - key - the api key for the user
-		 */
-		app.post('/container/list', function(req, res) {
-			var key = req.body.key;
-			if (key != undefined && key.length) {
-				success = { list: "success" };
-				success.containers = getContainers(key);
-				res.json(success);
-			} else {
-				error.message = "invalid key";
-				res.json(error);
-			}
-		});
+	/**
+	 * POST - /container/list/ - Get the containers
+	 * param - key - the api key for the user
+	 */
+	app.post('/container/list', function(req, res) {
+		var key = req.body.key;
+		if (key != undefined && key.length) {
+			success = { list: "success" };
+			success.containers = getContainers(key);
+			res.json(success);
+		} else {
+			error.message = "invalid key";
+			res.json(error);
+		}
+	});
 		
-		/**
-		 * POST - /container/:container/list - List files in a container
-		 * param - container - The name of the container
-		 * param - key - the api key for the user
-		*/
-		app.post('/container/:container/list', function(req, res) {
-			var key = req.body.key;
-			if (key != undefined && key.length) {
-				success.container = req.params.container;
-				success.files = [];
-				var items = getContainerFiles(success.container, key);
-				async.eachSeries(items, function(item, callback) {
-					var output = getContainerFileStats(success.container, key, item);
-					success.files.push(output);
-					callback();
-				}, function(err) {
-					res.json(success);
-				});
-			} else {
-				error.message = "invalid key";
-				res.json(error);
-			}
-		});
-
-		/**
-		 * POST - /container/create - Create a container
-		 * param - container - The name of the container
-		 * param - key - the api key for the user
-		 */
-        app.post('/container/create', function(req, res) {
-				var container = req.body.container;
-				var key = req.body.key;
-				if ((container != undefined && container.length) && (key != undefined && key.length)) {
-    	            var result = createContainer(container, key);
-					res.json(result);
-				} else {
-					error.message = "no container and/or key provided";
-					res.json(error);
-				}
-        });
-
-		/**
-		 * DELETE - /container/delete - Create a container
-		 * param - container - The name of the container
-		 * param - key - the api key for the user
-		*/
-		app.delete('/container/delete', function(req, res) {
-			var container = req.body.container;
-			var key = req.body.key;
-			if ((container != undefined && container.length) && (key != undefined && key.length)) {
-				var result = deleteContainer(container, key);
-				res.json(result);
-			} else {
-				error.message = "no container and/or key provided";
-				res.json(error);
-			}
-		});
+	/**
+	 * POST - /container/:container/list - List files in a container
+	 * param - container - The name of the container
+	 * param - key - the api key for the user
+	*/
+	app.post('/container/:container/list', function(req, res) {
+		var key = req.body.key;
+		if (key != undefined && key.length) {
+			success.container = req.params.container;
+			success.files = [];
+			var items = getContainerFiles(success.container, key);
+			async.eachSeries(items, function(item, callback) {
+				var output = getContainerFileStats(success.container, key, item);
+				success.files.push(output);
+				callback();
+			}, function(err) {
+				res.json(success);
+			});
+		} else {
+			error.message = "invalid key";
+			res.json(error);
+		}
+	});
+	
+	/**
+	 * POST - /container/create - Create a container
+	 * param - container - The name of the container
+	 * param - key - the api key for the user
+	 */
+	app.post('/container/create', function(req, res) {
+		var container = req.body.container;
+		var key = req.body.key;
+		if ((container != undefined && container.length) && (key != undefined && key.length)) {
+			var result = createContainer(container, key);
+			res.json(result);
+		} else {
+			error.message = "no container and/or key provided";
+			res.json(error);
+		}
+	});
+	
+	/**
+	 * DELETE - /container/delete - Create a container
+	 * param - container - The name of the container
+	 * param - key - the api key for the user
+	*/
+	app.delete('/container/delete', function(req, res) {
+		var container = req.body.container;
+		var key = req.body.key;
+		if ((container != undefined && container.length) && (key != undefined && key.length)) {
+			var result = deleteContainer(container, key);
+			res.json(result);
+		} else {
+			error.message = "no container and/or key provided";
+			res.json(error);
+		}
+	});
 }
 
 function getContainers(key) {
