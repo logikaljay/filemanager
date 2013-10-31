@@ -1,5 +1,6 @@
 var uuid = require('node-uuid'),
 	fs = require('fs'),
+	fsExtra = require('fs.extra'),
 	mime = require('mime'),
 	async = require('async'),
 	error = { container: "error" },
@@ -64,6 +65,23 @@ module.exports=function(app) {
 					res.json(error);
 				}
         });
+
+		/**
+		 * DELETE - /container/delete - Create a container
+		 * param - container - The name of the container
+		 * param - key - the api key for the user
+		*/
+		app.delete('/container/delete', function(req, res) {
+			var container = req.body.container;
+			var key = req.body.key;
+			if ((container != undefined && container.length) && (key != undefined && key.length)) {
+				var result = deleteContainer(container, key);
+				res.json(result);
+			} else {
+				error.message = "no container and/or key provided";
+				res.json(error);
+			}
+		});
 }
 
 function getContainers(key) {
@@ -102,6 +120,25 @@ function getContainerFileStats(container, key, file) {
 	}
 }
 
+function deleteContainer(name, key) {
+	var keyExists = fs.existsSync(containers + key);
+	if (!keyExists) {
+		error.message = "incorrect api key";
+	} else {
+		var containerExists = fs.existsSync(containers + key + "/" + name);
+		if (!containerExists) {
+			error.message = "container does not exist";
+			return error;
+		} else {
+			var path = containers + key + "/" + name;
+			fsExtra.rmrfSync(path);
+			success.folder = name;
+			success.message = "container deleted successfully";
+			return success;
+		}
+	}
+}
+
 function createContainer(name, key) {
 	var keyExists = fs.existsSync(containers + key);
 	if (!keyExists) {
@@ -119,9 +156,7 @@ function createContainer(name, key) {
 				error.message = "cannot create a container";
 				return error;
 			} else {
-				success = { create: "success" };
 				success.name = name;
-				success.key = key;
 				return success;
 			}
 		}
@@ -131,13 +166,9 @@ function createContainer(name, key) {
 			error.message = "container already exists";
 			return error;
 		} else {
-			var createName = fs.mkdirSync(containers + key + "/" + name);
-			if (createName) {
-				success.name = name;
-				success.key = key;
-				console.log(createName);
-				return success;
-			}
+			fs.mkdirSync(containers + key + "/" + name);
+			success.name = name;
+			return success;
 		}
 	}
 }
