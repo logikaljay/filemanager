@@ -8,6 +8,8 @@
 * imagemagick - ~0.1.3
 * node-uuid - ~1.4.1
 * fs.extra - ~1.2.1
+* async - ~0.2.9
+* mime - ~1.2.11
 
 ## Plans
 * container like storage that issues a api key on creation
