@@ -21,6 +21,9 @@
 * /container/list - POST - { container: 'name', key: 'secret' }
 * /container/:container/list - POST - { key: 'secret' }
 * /container/create - POST - { container: 'name', key: 'secret' }
+* /container/delete - DELETE - { container: 'name', key: 'secret' }
 
 ### Files
 * /upload - POST - { container: 'name', key: 'secret', file: @file.jpg }
+* /download/:container/:file - POST - { key: 'secret' }
+* /delete/:container/:file - DELETE - { key: 'secret' }

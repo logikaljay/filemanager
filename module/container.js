@@ -132,7 +132,7 @@ function deleteContainer(name, key) {
 		} else {
 			var path = containers + key + "/" + name;
 			fsExtra.rmrfSync(path);
-			success.folder = name;
+			success.container = name;
 			success.message = "container deleted successfully";
 			return success;
 		}
