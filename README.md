@@ -15,3 +15,12 @@
 * container like storage that issues a api key on creation
 * api for common tasks like create/upload/delete/resize
 * container cache for resizing
+
+## API (so far)
+### Containers
+* /container/list - POST - { container: 'name', key: 'secret' }
+* /container/:container/list - POST - { key: 'secret' }
+* /container/create - POST - { container: 'name', key: 'secret' }
+
+### Files
+* /upload - POST - { container: 'name', key: 'secret', file: @file.jpg }
