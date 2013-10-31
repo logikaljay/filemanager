@@ -8,6 +8,9 @@ var uuid = require('node-uuid'),
 var containers = './containers/';
 
 module.exports=function(app) {
+	/**
+	 * POST - /download/:container/:file
+	 */
 	app.post('/download/:container/:file', function(req, res) {
 		var key = req.body.key;
 		var container = req.params.container;

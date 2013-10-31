@@ -24,6 +24,11 @@ module.exports=function(app) {
 			}
 		});
 		
+		/**
+		 * POST - /container/:container/list - List files in a container
+		 * param - container - The name of the container
+		 * param - key - the api key for the user
+		*/
 		app.post('/container/:container/list', function(req, res) {
 			var key = req.body.key;
 			if (key != undefined && key.length) {
