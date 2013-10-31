@@ -2,8 +2,8 @@ var uuid = require('node-uuid'),
 	fs = require('fs'),
 	mime = require('mime'),
 	async = require('async'),
-	error = { create: "error" },
-	success = { create: "success" };
+	error = { container: "error" },
+	success = { container: "success" };
 
 var containers = './containers/';
 
@@ -27,14 +27,10 @@ module.exports=function(app) {
 		app.post('/container/:container/list', function(req, res) {
 			var key = req.body.key;
 			if (key != undefined && key.length) {
-				success = { list: "success" };
 				success.container = req.params.container;
 				success.files = [];
 				var items = getContainerFiles(success.container, key);
 				async.eachSeries(items, function(item, callback) {
-					//var path = containers + key +"/" + success.container + "/" + item;
-					//var stats = fs.statSync(path);
-					//var type = mime.lookup(path);
 					var output = getContainerFileStats(success.container, key, item);
 					success.files.push(output);
 					callback();
@@ -42,7 +38,6 @@ module.exports=function(app) {
 					res.json(success);
 				});
 			} else {
-				error = { list: "error" };
 				error.message = "invalid key";
 				res.json(error);
 			}
@@ -72,7 +67,6 @@ function getContainers(key) {
 		var items = fs.readdirSync(containers + key);
 		return items;
 	} else {
-		error = { list: "error" };
 		error.message = "incorrect key";
 		return error;
 	}
@@ -85,7 +79,6 @@ function getContainerFiles(container, key) {
 		var items = fs.readdirSync(containers + key + "/" + container);
 		return items;
 	} else {
-		error = { list: "error" };
 		error.message = "incorrect container and/or key";
 		return error;
 	}
@@ -99,7 +92,6 @@ function getContainerFileStats(container, key, file) {
 		var type = mime.lookup(path);
 		return { item: file, size: stats.size, mtime: stats.mtime, type: type };
 	} else {
-		error = { list: "error" };
 		error.message = "file(s) doesn't exist";
 		return error;
 	}
