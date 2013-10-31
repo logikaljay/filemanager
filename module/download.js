@@ -9,7 +9,8 @@ var containers = './containers/';
 
 module.exports=function(app) {
 	/**
-	 * POST - /download/:container/:file
+	 * POST - /download/:container/:file - download a file from the container
+	 * params - key - the api key
 	 */
 	app.post('/download/:container/:file', function(req, res) {
 		var key = req.body.key;
