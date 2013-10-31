@@ -7,10 +7,17 @@ var uuid = require('node-uuid'),
 var containers = './containers/';
 	
 module.exports=function(app) {
+	/**
+	 * DELETE - /delete/:container/:file - delete a file from a container
+	 * param - key - the api key
+	 * param - container - the storage container
+	 * param - file - the file to delete
+	 */
 	app.delete('/delete/:container/:file', function(req, res) {
-		var key = req.body.key;
-		var container = req.params.container;
-		var file = req.params.file;
+		var key = req.body.key,
+			container = req.params.container,
+			file = req.params.file;
+			
 		if (key != undefined && key.length) {
 			var result = deleteFile(container, key, file);
 			res.json(result);
@@ -22,13 +29,19 @@ module.exports=function(app) {
 }
 
 function deleteFile(name, key, file) {
-	var filePath = containers + key + "/" + name + "/" + file;
-	var fileExists = fs.existsSync(filePath);
+	var filePath = containers + key + "/" + name + "/" + file,
+		fileExists = fs.existsSync(filePath);
+		
 	if (!fileExists) {
 		error.message = "could not find file";
+		return error;
 	} else {
 		var path = containers + key + "/" + name;
+		
+		// remove the file (probably a nicer way to do this)
 		fsExtra.rmrfSync(path);
+		
+		// return some information regarding what we did
 		success.container = name;
 		success.file = file;
 		success.message = "file deleted successfully";
