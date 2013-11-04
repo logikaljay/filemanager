@@ -13,12 +13,20 @@ module.exports=function(app) {
 	 * POST - /container/list/ - Get the containers
 	 * param - key - the api key for the user
 	 */
-	app.post('/container/list', function(req, res) {
-		var key = req.body.key;
+	app.get('/container/list', function(req, res) {
+		var key = req.query.key;
 		if (key != undefined && key.length) {
-			success = { list: "success" };
-			success.containers = getContainers(key);
-			res.json(success);
+			success = { container: "success" };
+			var containers = getContainers(key);
+			success.containers = [];
+			async.eachSeries(containers, function(item, callback) {
+				var output = { name: item };
+				success.containers.push(output);
+				callback();
+			}, function(err) {
+				res.send(success);
+			});
+			res.json({ containers: success.containers });
 		} else {
 			error.message = "invalid key";
 			res.json(error);
@@ -30,8 +38,8 @@ module.exports=function(app) {
 	 * param - container - The name of the container
 	 * param - key - the api key for the user
 	*/
-	app.post('/container/:container/list', function(req, res) {
-		var key = req.body.key;
+	app.get('/container/:container/list', function(req, res) {
+		var key = req.query.key;
 		if (key != undefined && key.length) {
 			success.container = req.params.container;
 			success.files = [];
