@@ -15,7 +15,7 @@ module.exports=function(app) {
 	 */
 	app.get('/container/list', function(req, res) {
 		var key = req.query.key;
-		if (key != undefined && key.length) {
+		if (key !== undefined && key.length) {
 			success = { container: "success" };
 			var containers = getContainers(key);
 			success.containers = [];
@@ -24,9 +24,8 @@ module.exports=function(app) {
 				success.containers.push(output);
 				callback();
 			}, function(err) {
-				res.send(success);
+				res.json(success);
 			});
-			res.json({ containers: success.containers });
 		} else {
 			error.message = "invalid key";
 			res.json(error);
@@ -40,7 +39,7 @@ module.exports=function(app) {
 	*/
 	app.get('/container/:container/list', function(req, res) {
 		var key = req.query.key;
-		if (key != undefined && key.length) {
+		if (key !== undefined && key.length) {
 			success.container = req.params.container;
 			success.files = [];
 			var items = getContainerFiles(success.container, key);
@@ -65,7 +64,7 @@ module.exports=function(app) {
 	app.post('/container/create', function(req, res) {
 		var container = req.body.container;
 		var key = req.body.key;
-		if ((container != undefined && container.length) && (key != undefined && key.length)) {
+		if ((container !== undefined && container.length) && (key !== undefined && key.length)) {
 			var result = createContainer(container, key);
 			res.json(result);
 		} else {
@@ -82,7 +81,7 @@ module.exports=function(app) {
 	app.delete('/container/delete', function(req, res) {
 		var container = req.body.container;
 		var key = req.body.key;
-		if ((container != undefined && container.length) && (key != undefined && key.length)) {
+		if ((container !== undefined && container.length) && (key !== undefined && key.length)) {
 			var result = deleteContainer(container, key);
 			res.json(result);
 		} else {
@@ -153,14 +152,12 @@ function createContainer(name, key) {
 		var createKey = fs.mkdirSync(containers + key);
 		if (createKey) {
 			console.log(createKey);
-			error.code = errKey.code;
 			error.message = "cannot create a container";
 			return error;
 		} else {
 			var createName = fs.mkdirSync(containers + key + "/" + name);
 			if (createName) {
 				console.log(createName);
-				error.code = errName.code;
 				error.message = "cannot create a container";
 				return error;
 			} else {

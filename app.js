@@ -15,6 +15,8 @@ var allowCrossDomain = function(req, res, next) {
 app.configure(function() {
 	app.use(allowCrossDomain);
 	app.use(express.bodyParser());
+	app.use(express.cookieParser());
+	app.use(express.session({secret: '123456789QWERTY'}));
 });
 
 var error = { status: 'error' },
@@ -25,4 +27,5 @@ fs.readdirSync(modules).forEach(function(file) {
 	require(module)(app);
 });
 
-app.listen(process.env.PORT || 9123);
+console.log("listening for connections on " + process.env.PORT);
+app.listen(process.env.PORT);
