@@ -5,7 +5,9 @@ var uuid = require('node-uuid'),
 
 var containers = './containers/';
 
-module.exports=function(app) {
+module.exports = function(common) {
+    var app = common.app;
+    
 	app.get('/upload', function(req, res) {
 		res.send('/upload called');
 	});
@@ -15,18 +17,18 @@ module.exports=function(app) {
 			container = req.body.container,
 			file = req.files.file;
 
-		if (file == undefined) {
+		if (file === undefined) {
 			console.log(req.files);
 			error.message = "no file supplied";
 			res.json(error);
 		}
 
-		if (container == undefined || key == undefined) {
+		if (container === undefined || key === undefined) {
 			error.message = "incorrect key and or container";
 			res.json(error);
 		}
 
-		if (file != undefined && file.size) {
+		if (file !== undefined && file.size) {
 			// file exists
 			fs.readFile(file.path, function(err, data) {
 				var newPath = containers + key + "/" + container;

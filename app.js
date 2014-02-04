@@ -1,8 +1,17 @@
-var modules = './module/';
+var schemas = './schema/',
+    core    = './core/',
+    modules = './module/';
 
 var express = require('express'),
 	fs = require('fs'),
-	app = express();
+	mongoose = require('mongoose');
+	
+mongoose.connect('mongodb://localhost/filemanager');
+
+var common = {
+    app: express(),
+    mongoose: require('mongoose')
+};
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -10,22 +19,33 @@ var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 
     next();
-}
+};
 
-app.configure(function() {
-	app.use(allowCrossDomain);
-	app.use(express.bodyParser());
-	app.use(express.cookieParser());
-	app.use(express.session({secret: '123456789QWERTY'}));
+common.app.configure(function() {
+	common.app.use(allowCrossDomain);
+	common.app.use(express.bodyParser());
+	common.app.use(express.cookieParser());
+	common.app.use(express.session({secret: '123456789QWERTY'}));
 });
 
-var error = { status: 'error' },
-	result = { status: 'success' };
+common.schemas = {};
+fs.readdirSync(schemas).forEach(function(file) {
+    var schema = schemas + file;
+    console.log(schema);
+    require(schema)(common);
+});
 
+common.core = {};
+fs.readdirSync(core).forEach(function(file) {
+    var module = core + file;
+    require(module)(common);
+});
+
+common.modules = {};
 fs.readdirSync(modules).forEach(function(file) {
 	var module = modules + file;
-	require(module)(app);
+	require(module)(common);
 });
 
-console.log("listening for connections on " + process.env.PORT);
-app.listen(process.env.PORT);
+console.log("listening for connections on " + (process.env.PORT || 9123));
+common.app.listen(process.env.PORT || 9123);

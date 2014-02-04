@@ -6,7 +6,9 @@ var uuid = require('node-uuid'),
 
 var containers = './containers/';
 
-module.exports=function(app) {
+module.exports = function(common) {
+    var app = common.app;
+    
 	/**
 	 * PUT - /rename - rename a file
 	 * param - key - the api key

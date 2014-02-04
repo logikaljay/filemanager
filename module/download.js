@@ -7,7 +7,9 @@ var uuid = require('node-uuid'),
 
 var containers = './containers/';
 
-module.exports=function(app) {
+module.exports = function(common) {
+    var app = common.app;
+    
 	/**
 	 * POST - /download/:container/:file - download a file from the container
 	 * params - key - the api key

@@ -1,10 +1,15 @@
-module.exports=function(app) {
+var uuid = require('node-uuid'),
+    crypto = require('crypto');
+
+module.exports = function(common) {
+    var app = common.app,
+        mongoose = common.mongoose;
+    
     /**
      * Attempt to log the user in, send a cookie if successful
      */
     app.post('/auth/login', function(req, res) {
          var post = req.body;
-         console.log(req.body);
          
          // TODO: modify this to check the user against a database of users
          if (post.username == "jay" && post.password == "supersecret") {
@@ -28,8 +33,44 @@ module.exports=function(app) {
     });
     
     /**
-     * catch all requests, make sure that they are authenticated before continuing
+     * create account
      */
+    app.post('/auth/create', function(req, res) {
+        var post = req.body;
+        if (post.email !== undefined && post.password !== undefined) {
+            common.user.createUser(crypto, post.email, post.password, function(err, user) {
+                if (user !== null) {
+                    res.json(user);
+                } else {
+                    res.json(err);
+                }
+            });
+        } else {
+            res.json({ error: "invalid parameters supplied" });
+        }
+    });
+    
+    /**
+     * reset api key for user
+     */
+    app.post('/auth/reset', function(req, res) {
+        var post = req.body;
+        if (post.email !== undefined && post.password !== undefined) {
+            common.user.resetApi(crypto, post.email, post.password, function(err, result) {
+               if (result !== null) {
+                   res.json(result);
+               } else {
+                   res.json(err);
+               }
+            });
+        } else {
+            res.json({error: "invalid parameters supplied"});
+        }
+    });
+    
+    /**
+     * catch all requests, make sure that they are authenticated before continuing
+     
     app.all('*', function(req, res, next) {
        if (/^\/auth/g.test(req.url)) {
            return next();
@@ -40,6 +81,7 @@ module.exports=function(app) {
            return next(new Error(401));
        }
     });
+    */
     
     /**
      * Modify this function to test if the user is authenticated
