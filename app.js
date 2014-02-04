@@ -31,7 +31,6 @@ common.app.configure(function() {
 common.schemas = {};
 fs.readdirSync(schemas).forEach(function(file) {
     var schema = schemas + file;
-    console.log(schema);
     require(schema)(common);
 });
 

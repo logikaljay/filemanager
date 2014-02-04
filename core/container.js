@@ -70,22 +70,13 @@ module.exports = function(common) {
         var User = common.mongoose.model('User', common.schemas.user);
         User.findByApi(key, function(err, user) {
             if (user) {
-                var result = createContainer(container, user._id);
-                res.json(result);
+                createContainer(common.container, container, user._id, function(result) {
+                    res.json(result);
+                });
             } else {
                 res.json({error: "failed to create container"});
             }
         });
-		
-		/*
-		if ((container !== undefined && container.length) && (key !== undefined && key.length)) {
-			var result = createContainer(container, key);
-			res.json(result);
-		} else {
-			error.message = "no container and/or key provided";
-			res.json(error);
-		}
-		*/
 	});
 	
 	/**
@@ -161,34 +152,36 @@ function deleteContainer(name, key) {
 	}
 }
 
-function createContainer(name, key) {
-	var keyExists = fs.existsSync(containers + key);
+function createContainer(db, name, userId, cb) {
+	var keyExists = fs.existsSync(containers + userId);
 	if (!keyExists) {
-		var createKey = fs.mkdirSync(containers + key);
+		var createKey = fs.mkdirSync(containers + userId);
 		if (createKey) {
 			console.log(createKey);
 			error.message = "cannot create a container";
-			return error;
+            cb(error);
 		} else {
-			var createName = fs.mkdirSync(containers + key + "/" + name);
+			var createName = fs.mkdirSync(containers + userId + "/" + name);
 			if (createName) {
 				console.log(createName);
 				error.message = "cannot create a container";
-				return error;
+				cb(error);
 			} else {
-				success.name = name;
-				return success;
+                db.createContainer(name, userId, function(err, result) {
+                    cb(result);
+                });
 			}
 		}
 	} else {
-		var exists = fs.existsSync(containers + key + "/" + name);
+		var exists = fs.existsSync(containers + userId + "/" + name);
 		if (exists) {
 			error.message = "container already exists";
-			return error;
+			cb(error);
 		} else {
-			fs.mkdirSync(containers + key + "/" + name);
-			success.name = name;
-			return success;
+			fs.mkdirSync(containers + userId + "/" + name);
+            db.createContainer(name, userId, function(result) {
+                cb(result);
+            });
 		}
 	}
 }
