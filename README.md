@@ -17,11 +17,15 @@
 * container cache for resizing
 
 ## API (so far)
+### Auth
+* /auth/create - POST - { email: 'bob@jones.co', password: 'supersecret' }
+* /auth/reset - POST - { email: 'bob@jones.co', password: 'supersecret' }
+
 ### Containers
-* /container/list - POST - { container: 'name', key: 'secret' }
-* /container/:container/list - POST - { key: 'secret' }
-* /container/create - POST - { container: 'name', key: 'secret' }
-* /container/delete - DELETE - { container: 'name', key: 'secret' }
+* /container/list - GET - { key: 'api-key' }
+* /container/list/:container - POST - { key: 'api-key' }
+* /container/create/:container - GET - { key: 'api-key' }
+* /container/delete/:container - DELETE - { key: 'api-key' }
 
 ### Files
 * /upload - POST - { container: 'name', key: 'secret', file: @file.jpg }
