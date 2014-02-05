@@ -30,7 +30,9 @@ module.exports = function(common) {
                 });
                 
                 uploaded.save(function(err) {
-                   cb(err, this); 
+                    File.findById(uploaded, function(err, file) {
+                       cb(err, file); 
+                    });
                 });
             });
         });
