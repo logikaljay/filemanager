@@ -33,24 +33,28 @@ module.exports = function(common) {
 			fs.readFile(file.path, function(err, data) {
                 var User = common.mongoose.model('User', common.schemas.user);
                 User.findByApi(key, function(err, user) {
-    				var newPath = containers + user._id + "/" + container;
-    				fs.writeFile(newPath +"/"+ file.name, data, function(err) {
-    					if (err) {
-    						console.log(err);
-    						error.message = "could not save the file";
-    						res.json(error);
-    					}
-    					
-                        success.message = "file uploaded";
-                        success.name = file.name;
-                        success.size = file.size;
-                        success.type = file.type;
-    
-                        var File = common.mongoose.model('File', common.schemas.file);
-                        File.createFileForApi(key, container, file.name, file.size, file.type, function(err, file) {
-                            res.json(success);
-                        });
-    				});
+                    if (user === null) {
+                        res.json({error: "could not upload the file"});
+                    } else {
+        				var newPath = containers + user._id + "/" + container;
+        				fs.writeFile(newPath +"/"+ file.name, data, function(err) {
+        					if (err) {
+        						console.log(err);
+        						error.message = "could not save the file";
+        						res.json(error);
+        					}
+        					
+                            success.message = "file uploaded";
+                            success.name = file.name;
+                            success.size = file.size;
+                            success.type = file.type;
+        
+                            var File = common.mongoose.model('File', common.schemas.file);
+                            File.createFileForApi(key, container, file.name, file.size, file.type, function(err, file) {
+                                res.json(success);
+                            });
+        				});
+                    }
                 });
 			});
 		} else {

@@ -61,11 +61,20 @@ module.exports = function(common) {
             Container.findOne({ name: containerName, _creator: user._id }, function(err, container) {
                 if (container === null) {
                     cb({container:"couldn't find container"});
-                    
                 } else {
+                    var File = common.mongoose.model('File', common.schemas.file);
+                    File.find({_creator: container}, function(err, files) {
+                        files.forEach(function(file, index) {
+                           file.remove(function(err) {
+                               console.log("removing file: " + file);
+                           }); 
+                        });
+                    });
+                    
                     container.remove(function(err) {
                         cb({container:"deleted"}); 
                     });
+                    
                 }
             });
         });

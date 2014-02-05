@@ -202,13 +202,11 @@ function createContainer(db, name, userId, cb) {
 	if (!keyExists) {
 		var createKey = fs.mkdirSync(containers + userId);
 		if (createKey) {
-			console.log(createKey);
 			error.message = "cannot create a container";
             cb(error);
 		} else {
 			var createName = fs.mkdirSync(containers + userId + "/" + name);
 			if (createName) {
-				console.log(createName);
 				error.message = "cannot create a container";
 				cb(error);
 			} else {
