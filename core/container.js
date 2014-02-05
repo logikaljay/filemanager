@@ -21,12 +21,24 @@ module.exports = function(common) {
 			success = { container: "success" };
 			var containers = getContainers(key);
 			success.containers = [];
-			async.eachSeries(containers, function(item, callback) {
-				var output = { name: item };
-				success.containers.push(output);
-				callback();
-			}, function(err) {
-				res.json(success);
+			var User = common.mongoose.model('User', common.schemas.user);
+			var Container = common.mongoose.model('Container', common.schemas.container);
+			Container.find().populate({
+			        path: '_creator',
+			        match: { key: key }
+			    }).exec(function(err, containers) {
+			        console.log(containers);
+			    async.eachSeries(containers, function(item, callback) {
+			        if (item._creator !== null) {
+                        success.containers.push({
+                            name: item.name 
+                        });
+			        }
+			        
+                    callback();
+                }, function(err) {
+                    res.json(success);
+                });
 			});
 		} else {
 			error.message = "invalid key";
@@ -44,13 +56,36 @@ module.exports = function(common) {
 		if (key !== undefined && key.length) {
 			success.container = req.params.container;
 			success.files = [];
-			var items = getContainerFiles(success.container, key);
-			async.eachSeries(items, function(item, callback) {
-				var output = getContainerFileStats(success.container, key, item);
-				success.files.push(output);
-				callback();
-			}, function(err) {
-				res.json(success);
+			var User = common.mongoose.model('User', common.schemas.user);
+			User.findByApi(key, function(err, user) {
+			    if (user === null) {
+			        res.json({error: "invalid api key"});
+			    } else {
+    			    var File = common.mongoose.model('File', common.schemas.file);
+        			var Container = common.mongoose.model('Container', common.schemas.container);
+        			Container.findByApiAndName(key, req.params.container, function(err, container) {
+        			    console.log(container);
+        			    if (container.length < 1) {
+        			        res.json({error: "couldn't find container"});
+        			    }
+            			File.find().populate({
+            			    path: '_creator',
+            			    match: { name: req.params.container }
+            			}).exec(function(err, files, container) {
+            			    async.eachSeries(files, function(file, callback) {
+            			        if (file._creator !== null) {
+            			            console.log(file);
+            			            var fileName = file.name;
+            			            var output = getContainerFileStats(req.params.container, user._id, fileName);
+            			            success.files.push(output);
+            			        }
+            			        callback();
+            			    }, function(err) {
+            			        res.json(success);
+            			    });
+            			});
+        			});
+			    }
 			});
 		} else {
 			error.message = "invalid key";
@@ -120,8 +155,8 @@ function getContainerFiles(container, key) {
 	}
 }
 
-function getContainerFileStats(container, key, file) {
-	var path = containers + key + "/" + container + "/" + file;
+function getContainerFileStats(container, userId, file) {
+	var path = containers + userId + "/" + container + "/" + file;
 	var fileExists = fs.existsSync(path);
 	if (fileExists) {
 		var stats = fs.statSync(path);

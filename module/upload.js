@@ -31,21 +31,27 @@ module.exports = function(common) {
 		if (file !== undefined && file.size) {
 			// file exists
 			fs.readFile(file.path, function(err, data) {
-				var newPath = containers + key + "/" + container;
-				fs.writeFile(newPath +"/"+ file.name, data, function(err) {
-					if (err) {
-						console.log(err);
-						error.message = "could not save the file";
-						res.json(error);
-					}
-
-					success.message = "file uploaded";
-					success.name = file.name;
-					success.size = file.size;
-					success.type = file.type;
-
-					res.json(success);
-				});
+                var User = common.mongoose.model('User', common.schemas.user);
+                User.findByApi(key, function(err, user) {
+    				var newPath = containers + user._id + "/" + container;
+    				fs.writeFile(newPath +"/"+ file.name, data, function(err) {
+    					if (err) {
+    						console.log(err);
+    						error.message = "could not save the file";
+    						res.json(error);
+    					}
+    					
+                        success.message = "file uploaded";
+                        success.name = file.name;
+                        success.size = file.size;
+                        success.type = file.type;
+    
+                        var File = common.mongoose.model('File', common.schemas.file);
+                        File.createFileForApi(key, container, file.name, file.size, file.type, function(err, file) {
+                            res.json(success);
+                        });
+    				});
+                });
 			});
 		} else {
 			error.message = "no file supplied";

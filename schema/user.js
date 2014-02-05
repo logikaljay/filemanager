@@ -8,7 +8,7 @@ module.exports = function(common) {
         salt: String,
         password: String,
         key: String,
-        containers: []
+        containers: [{ type: Schema.Types.ObjectId, ref: 'Container' }]
     });
     
     common.schemas.user = userSchema;
