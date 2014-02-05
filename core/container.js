@@ -186,7 +186,7 @@ function deleteContainer(db, name, userId, cb) {
 			cb(error);
 		} else {
 			var path = containers + userId + "/" + name;
-			//fsExtra.rmrfSync(path);
+			fsExtra.rmrfSync(path);
 			success.container = name;
 			success.message = "container deleted successfully";
 			
