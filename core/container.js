@@ -119,12 +119,17 @@ module.exports = function(common) {
 	 * param - container - The name of the container
 	 * param - key - the api key for the user
 	*/
-	app.delete('/container/delete', function(req, res) {
-		var container = req.body.container;
+	app.delete('/container/delete/:container', function(req, res) {
+		var container = req.params.container;
+		console.log(req.body);
 		var key = req.body.key;
 		if ((container !== undefined && container.length) && (key !== undefined && key.length)) {
-			var result = deleteContainer(container, key);
-			res.json(result);
+			var User = common.mongoose.model('User', common.schemas.user);
+			User.findByApi(key, function(err, user) {
+    			deleteContainer(common.container, container, user._id, function(result) {
+                    res.json(result);
+    			});
+			});
 		} else {
 			error.message = "no container and/or key provided";
 			res.json(error);
@@ -168,21 +173,26 @@ function getContainerFileStats(container, userId, file) {
 	}
 }
 
-function deleteContainer(name, key) {
-	var keyExists = fs.existsSync(containers + key);
+function deleteContainer(db, name, userId, cb) {
+	var keyExists = fs.existsSync(containers + userId);
 	if (!keyExists) {
 		error.message = "incorrect api key";
+		cb(error);
 	} else {
-		var containerExists = fs.existsSync(containers + key + "/" + name);
+	    console.log(containers + userId + "/" + name);
+		var containerExists = fs.existsSync(containers + userId + "/" + name);
 		if (!containerExists) {
 			error.message = "container does not exist";
-			return error;
+			cb(error);
 		} else {
-			var path = containers + key + "/" + name;
-			fsExtra.rmrfSync(path);
+			var path = containers + userId + "/" + name;
+			//fsExtra.rmrfSync(path);
 			success.container = name;
 			success.message = "container deleted successfully";
-			return success;
+			
+			db.deleteContainer(name, userId, function(result) {
+			    cb(result);
+			});
 		}
 	}
 }

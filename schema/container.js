@@ -53,4 +53,21 @@ module.exports = function(common) {
             });
         }); 
     };
+    
+    common.container.deleteContainer = function(containerName, user, cb) {
+        var User = common.mongoose.model('User', common.schemas.user);
+        User.findById(user, function(err, user) {
+            var Container = common.mongoose.model('Container', common.schemas.container);
+            Container.findOne({ name: containerName, _creator: user._id }, function(err, container) {
+                if (container === null) {
+                    cb({container:"couldn't find container"});
+                    
+                } else {
+                    container.remove(function(err) {
+                        cb({container:"deleted"}); 
+                    });
+                }
+            });
+        });
+    };
 };
