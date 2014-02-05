@@ -113,28 +113,6 @@ module.exports = function(common) {
             }
         });
 	});
-	
-	/**
-	 * DELETE - /container/delete - Create a container
-	 * param - container - The name of the container
-	 * param - key - the api key for the user
-	*/
-	app.delete('/container/delete/:container', function(req, res) {
-		var container = req.params.container;
-		console.log(req.body);
-		var key = req.body.key;
-		if ((container !== undefined && container.length) && (key !== undefined && key.length)) {
-			var User = common.mongoose.model('User', common.schemas.user);
-			User.findByApi(key, function(err, user) {
-    			deleteContainer(common.container, container, user._id, function(result) {
-                    res.json(result);
-    			});
-			});
-		} else {
-			error.message = "no container and/or key provided";
-			res.json(error);
-		}
-	});
 }
 
 function getContainers(key) {
@@ -168,32 +146,8 @@ function getContainerFileStats(container, userId, file) {
 		var type = mime.lookup(path);
 		return { item: file, size: stats.size, mtime: stats.mtime, type: type };
 	} else {
-		error.message = "file(s) doesn't exist";
+		error.message = "file doesn't exist";
 		return error;
-	}
-}
-
-function deleteContainer(db, name, userId, cb) {
-	var keyExists = fs.existsSync(containers + userId);
-	if (!keyExists) {
-		error.message = "incorrect api key";
-		cb(error);
-	} else {
-	    console.log(containers + userId + "/" + name);
-		var containerExists = fs.existsSync(containers + userId + "/" + name);
-		if (!containerExists) {
-			error.message = "container does not exist";
-			cb(error);
-		} else {
-			var path = containers + userId + "/" + name;
-			fsExtra.rmrfSync(path);
-			success.container = name;
-			success.message = "container deleted successfully";
-			
-			db.deleteContainer(name, userId, function(result) {
-			    cb(result);
-			});
-		}
 	}
 }
 

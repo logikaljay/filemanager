@@ -1,4 +1,6 @@
 module.exports = function(common) {
+    common.file = {};
+    
     var Schema = common.mongoose.Schema;
     
     common.schemas.file = new Schema({
@@ -32,5 +34,31 @@ module.exports = function(common) {
                 });
             });
         });
+    };
+    
+    common.file.deleteFile = function(containerName, fileName, user, cb) {
+        var User = common.mongoose.model('User', common.schemas.user);
+        var File = common.mongoose.model('File', common.schemas.file);
+        var Container = common.mongoose.model('Container', common.schemas.container);
+        User.findById(user, function(err, user) {
+            if (user === null) {
+                cb({error:"invalid api key"});
+            }
+            Container.findOne({ name: containerName }, function(err, container) {
+                if (container === null) {
+                    cb({error:"couldn't find file"});
+                } else {
+                    File.findOne({ _creator: container, name: fileName }, function(err, file) {
+                        if (file === null) {
+                            cb({error:"couldn't find file"});
+                        } else {
+                            file.remove(function(err) {
+                                cb({deleted: fileName});
+                            });
+                        }
+                    });
+                }
+            });
+        })
     };
 }
