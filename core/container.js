@@ -113,7 +113,7 @@ module.exports = function(common) {
             }
         });
 	});
-}
+};
 
 function getContainers(key) {
 	var exists = fs.existsSync(containers + key);
@@ -124,12 +124,11 @@ function getContainers(key) {
 		error.message = "incorrect key";
 		return error;
 	}
-}
+};
 
 function getContainerFiles(container, key) {
 	var containerExists = fs.existsSync(containers + key + "/" + container);
 	if (containerExists) {
-		var output = [];
 		var items = fs.readdirSync(containers + key + "/" + container);
 		return items;
 	} else {
