@@ -20,15 +20,11 @@
 ### Auth
 * /auth/create - POST - { email: 'bob@jones.co', password: 'supersecret' }
 * /auth/reset - POST - { email: 'bob@jones.co', password: 'supersecret' }
-
-### Containers
 * /container/list - GET - { key: 'api-key' }
 * /container/list/:container - POST - { key: 'api-key' }
 * /container/create/:container - GET - { key: 'api-key' }
-* /container/delete/:container - DELETE - { key: 'api-key' }
-
-### Files
-* /upload - POST - { container: 'name', key: 'secret', file: @file.jpg }
-* /download/:container/:file - POST - { key: 'secret' }
+* /delete/:container - DELETE - { key: 'api-key' }
 * /delete/:container/:file - DELETE - { key: 'secret' }
+* /upload - POST - { container: 'name', key: 'secret', file: @file.jpg }
 * /rename - PUT - { container: 'name', key: 'secret', oldfile: file.jpg, newfile: newfile.jpg }
+* /download/:container/:file - POST - { key: 'secret' }
