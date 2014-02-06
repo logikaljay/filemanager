@@ -1,10 +1,11 @@
-var uuid = require('node-uuid'),
-	fs = require('fs'),
-	fsExtra = require('fs.extra'),
+"use strict";
+
+var	fs = require("fs"),
+	fsExtra = require("fs.extra"),
 	error = { delete: "error" },
 	success = { delete: "success" };
 
-var containers = './containers/';
+var containers = "./containers/";
 	
 module.exports = function(common) {
     var app = common.app;
@@ -15,20 +16,20 @@ module.exports = function(common) {
 	 * param - container - the storage container
 	 * param - file - the file to delete
 	 */
-	app.delete('/delete/:container/:file', function(req, res) {
+	app.delete("/delete/:container/:file", function(req, res) {
 		var key = req.body.key,
 			container = req.params.container,
 			file = req.params.file;
 			
-		if (key != undefined && key.length) {
-		    var User = common.mongoose.model('User', common.schemas.user);
+		if (key !== undefined && key.length) {
+		    var User = common.mongoose.model("User", common.schemas.user);
 		    User.findByApi(key, function(err, user) {
 		        if (user === null) {
 		            res.send({error: "invalid api key"});
 		        } else {
-        			deleteFile(common.file, container, user._id, file, function(result) {
-        			    res.json(result);
-        			});
+					deleteFile(common.file, container, user._id, file, function(result) {
+						res.json(result);
+					});
 		        }
 		    });
 		} else {
@@ -41,23 +42,23 @@ module.exports = function(common) {
 	 * DELETE - /delete/:continer - Create a container
 	 * param - key - the api key for the user
 	*/
-	app.delete('/delete/:container', function(req, res) {
+	app.delete("/delete/:container", function(req, res) {
 		var container = req.params.container;
 		console.log(req.body);
 		var key = req.body.key;
 		if ((container !== undefined && container.length) && (key !== undefined && key.length)) {
-			var User = common.mongoose.model('User', common.schemas.user);
+			var User = common.mongoose.model("User", common.schemas.user);
 			User.findByApi(key, function(err, user) {
-    			deleteContainer(common.container, container, user._id, function(result) {
+				deleteContainer(common.container, container, user._id, function(result) {
                     res.json(result);
-    			});
+				});
 			});
 		} else {
 			error.message = "no container and/or key provided";
 			res.json(error);
 		}
 	});
-}
+};
 
 
 function deleteFile(db, containerName, user, fileName, cb) {
@@ -81,7 +82,7 @@ function deleteFile(db, containerName, user, fileName, cb) {
 		success.message = "file deleted successfully";
 		
 		db.deleteFile(containerName, fileName, user, function(result) {
-		    cb(result); 
+		    cb(result);
 		});
 	}
 }

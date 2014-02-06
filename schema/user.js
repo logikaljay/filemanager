@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function(common) {
     common.user = {};
     
@@ -8,7 +10,7 @@ module.exports = function(common) {
         salt: String,
         password: String,
         key: String,
-        containers: [{ type: Schema.Types.ObjectId, ref: 'Container' }]
+        containers: [{ type: Schema.Types.ObjectId, ref: "Container" }]
     });
     
     common.schemas.user = userSchema;
@@ -16,26 +18,26 @@ module.exports = function(common) {
         this.findOne({ key: api }, cb);
     };
     common.schemas.user.methods.emailExists = function(cb) {
-        return this.model('User').find({ 'email': this.email }, cb);
+        return this.model("User").find({ "email": this.email }, cb);
     };
     
     
     common.user.resetApi = function(crypto, email, pass, cb) {
-        var User = common.mongoose.model('User', userSchema);
-        User.findOne({ 'email': email }, function (err, user) {
+        var User = common.mongoose.model("User", userSchema);
+        User.findOne({ "email": email }, function (err, user) {
             if (err || user === null) {
                 cb({ error: "could not find requested user" }, null);
             }
             
             var passwordAttempt = user.salt + "|" + pass;
-            var passwordAttemptHash = crypto.createHash('sha256').update(passwordAttempt).digest('hex');
+            var passwordAttemptHash = crypto.createHash("sha256").update(passwordAttempt).digest("hex");
             if (user.password === passwordAttemptHash) {
-                var api = crypto.randomBytes(20).toString('hex');
+                var api = crypto.randomBytes(20).toString("hex");
                 user.key = api;
                 
                 user.save(function(err) {
                     if (err) {
-                        cb({ error: "could not update the api key" });
+                        cb({ error: "couldn't update the api key" });
                     }
                     
                     cb(null, { key: api });
@@ -47,12 +49,12 @@ module.exports = function(common) {
     };
     
     common.user.createUser = function(crypto, email, pass, cb) {
-        var salt = crypto.randomBytes(10).toString('hex');
+        var salt = crypto.randomBytes(10).toString("hex");
         var password = salt + "|" + pass;
-        var passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-        var api = crypto.randomBytes(20).toString('hex');
+        var passwordHash = crypto.createHash("sha256").update(password).digest("hex");
+        var api = crypto.randomBytes(20).toString("hex");
         
-        var User = common.mongoose.model('User', userSchema);
+        var User = common.mongoose.model("User", userSchema);
         var newUser = new User({
            email: email,
            password: passwordHash,
@@ -65,7 +67,7 @@ module.exports = function(common) {
                 newUser.save(function(err) {
                     if (err) {
                         return null;
-                    } 
+                    }
                     
                     User.findById(newUser, function(err, doc) {
                         

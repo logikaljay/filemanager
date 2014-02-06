@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function(common) {
     common.file = {};
     
@@ -9,18 +11,18 @@ module.exports = function(common) {
         type: String,
         date: { type: Date, default: Date.now },
         description: String,
-        _creator: { type: Schema.Types.ObjectId, ref: 'Container' }
+        _creator: { type: Schema.Types.ObjectId, ref: "Container" }
     });
     
     common.schemas.file.statics.findSimilarNames = function(cb) {
-        this.model('File').find({ name: 'test' }, cb);
+        this.model("File").find({ name: "test" }, cb);
     };
     common.schemas.file.statics.createFileForApi = function(api, containerName, name, size, type, cb) {
-        var User = common.mongoose.model('User', common.schemas.user);
+        var User = common.mongoose.model("User", common.schemas.user);
         User.findByApi(api, function(err, user) {
-            var Container = common.mongoose.model('Container', common.schemas.container);
+            var Container = common.mongoose.model("Container", common.schemas.container);
             Container.findOne({ name: containerName, _creator: user }, function(err, container) {
-                var File = common.mongoose.model('File', common.schemas.file);
+                var File = common.mongoose.model("File", common.schemas.file);
                 var uploaded = new File({
                     name: name,
                     size: size,
@@ -30,18 +32,22 @@ module.exports = function(common) {
                 });
                 
                 uploaded.save(function(err) {
-                    File.findById(uploaded, function(err, file) {
-                       cb(err, file); 
-                    });
+                    if (err) {
+                        cb(err, null);
+                    } else {
+                        File.findById(uploaded, function(err, file) {
+                           cb(err, file);
+                        });
+                    }
                 });
             });
         });
     };
     
     common.file.deleteFile = function(containerName, fileName, user, cb) {
-        var User = common.mongoose.model('User', common.schemas.user);
-        var File = common.mongoose.model('File', common.schemas.file);
-        var Container = common.mongoose.model('Container', common.schemas.container);
+        var File = common.mongoose.model("File", common.schemas.file);
+        var User = common.mongoose.model("User", common.schemas.user);
+        var Container = common.mongoose.model("Container", common.schemas.container);
         User.findById(user, function(err, user) {
             if (user === null) {
                 cb({error:"invalid api key"});
@@ -55,7 +61,11 @@ module.exports = function(common) {
                             cb({error:"couldn't find file"});
                         } else {
                             file.remove(function(err) {
-                                cb({deleted: fileName});
+                                if (err) {
+                                    cb(err);
+                                } else {
+                                    cb({deleted: fileName});
+                                }
                             });
                         }
                     });

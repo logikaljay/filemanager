@@ -1,18 +1,19 @@
-var uuid = require('node-uuid'),
-	fs = require('fs'),
+"use strict";
+
+var fs = require("fs"),
 	error = { upload: "error" },
 	success = { upload: "success" };
 
-var containers = './containers/';
+var containers = "./containers/";
 
 module.exports = function(common) {
     var app = common.app;
     
-	app.get('/upload', function(req, res) {
-		res.send('/upload called');
+	app.get("/upload", function(req, res) {
+		res.send("/upload called");
 	});
 
-	app.post('/upload', function(req, res) {
+	app.post("/upload", function(req, res) {
 		var key = req.body.key,
 			container = req.body.container,
 			file = req.files.file;
@@ -31,7 +32,7 @@ module.exports = function(common) {
 		if (file !== undefined && file.size) {
 			// file exists
 			fs.readFile(file.path, function(err, data) {
-                var User = common.mongoose.model('User', common.schemas.user);
+                var User = common.mongoose.model("User", common.schemas.user);
                 User.findByApi(key, function(err, user) {
                     if (user === null) {
                         res.json({error: "could not upload the file"});
@@ -49,9 +50,13 @@ module.exports = function(common) {
                             success.size = file.size;
                             success.type = file.type;
                             
-                            var File = common.mongoose.model('File', common.schemas.file);
+                            var File = common.mongoose.model("File", common.schemas.file);
                             File.createFileForApi(key, container, file.name, file.size, file.type, function(err, file) {
-                                res.json(success);
+								if (err) {
+									res.json({ error: "could not upload the file" });
+								} else {
+									res.json(file);
+								}
                             });
                         });
                     }

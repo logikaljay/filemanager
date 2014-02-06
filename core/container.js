@@ -13,7 +13,7 @@ module.exports = function(common) {
     
 	/**
 	 * POST - /container/list/ - Get the containers
-	 * param - key - the api key for the user
+	 * @param {string} key The api key for the user
 	 */
 	app.get('/container/list', function(req, res) {
 		var key = req.query.key;

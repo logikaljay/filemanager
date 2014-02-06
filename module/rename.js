@@ -1,10 +1,10 @@
-var uuid = require('node-uuid'),
-	fs = require('fs'),
-	fsExtra = require('fs.extra'),
+"use strict";
+
+var fs = require("fs"),
 	error = { rename: "error" },
 	success = { rename: "success" };
 
-var containers = './containers/';
+var containers = "./containers/";
 
 module.exports = function(common) {
     var app = common.app;
@@ -16,14 +16,14 @@ module.exports = function(common) {
 	 * param - oldname - the original file name
 	 * param - newname - the new filename (target)
 	 */
-	app.put('/rename', function(req, res) {
+	app.put("/rename", function(req, res) {
 		var key = req.body.key;
 		var container = req.body.container;
 		var oldName = req.body.oldname;
 		var newName = req.body.newname;
 
-		if ((key != undefined && key.length) && (container != undefined && container.length)) {
-			if (oldName != undefined && newName != undefined) {
+		if ((key !== undefined && key.length) && (container !== undefined && container.length)) {
+			if (oldName !== undefined && newName !== undefined) {
 				var result = moveFile(container, key, oldName, newName);
 				res.json(result);
 			} else {
@@ -35,7 +35,7 @@ module.exports = function(common) {
 			res.json(error);
 		}
 	});
-}
+};
 
 function moveFile(container, key, oldName, newName) {
 	var oldPath = containers + key + "/" + container + "/" + oldName,
